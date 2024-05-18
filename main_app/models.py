@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Task 1
 class BaseCharacter(models.Model):
     name = models.CharField(max_length=100)
@@ -48,3 +49,60 @@ class FelbladeDemonHunter(DemonHunter):
     felblade_ability = models.CharField(max_length=100)
 
 
+# Task 2
+
+class UserProfile(models.Model):
+    username = models.CharField(
+        max_length=70,
+        unique=True,
+    )
+
+    email = models.EmailField(
+        unique=True,
+    )
+
+    bio = models.TextField(
+        null=True,
+        blank=True,
+    )
+
+
+class Message(models.Model):
+    sender = models.ForeignKey(
+        to=UserProfile,
+        on_delete=models.CASCADE,
+        related_name='sent_messages',
+    )
+
+    receiver = models.ForeignKey(
+        to=UserProfile,
+        on_delete=models.CASCADE,
+        related_name='received_messages',
+    )
+
+    content = models.TextField()
+
+    timestamp = models.DateField(
+        auto_now_add=True,
+    )
+
+    is_read = models.BooleanField(default=False)
+
+    def mark_as_read(self) -> None:
+        self.is_read = True
+
+    def reply_to_message(self, reply_content) -> object:
+        return Message(
+            sender=self.receiver,
+            receiver=self.receiver,
+            content=reply_content,
+        )
+
+    def forward_message(self, receiver: UserProfile):
+        return Message(
+            sender=self.receiver,
+            receiver=UserProfile,
+            content=self.content,
+        )
+
+# Task 3
