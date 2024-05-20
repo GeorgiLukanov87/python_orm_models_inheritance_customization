@@ -105,4 +105,20 @@ class Message(models.Model):
             content=self.content,
         )
 
+
 # Task 3
+
+class StudentIDField(models.PositiveIntegerField):
+    def to_python(self, value):
+        try:
+            return int(value)
+        except ValueError:
+            pass
+
+
+class Student(models.Model):
+    name = models.CharField(
+        max_length=100,
+    )
+
+    student_id = models.StudentIDField()
